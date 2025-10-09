@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TextShare</string>
+    <string name="title_activity_main">TextShare</string>
+    <string name="package_name">com.danutarh.textshare</string>
+    <string name="custom_url_scheme">com.danutarh.textshare</string>
+</resources>

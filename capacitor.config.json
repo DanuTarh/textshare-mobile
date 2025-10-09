@@ -1,0 +1,11 @@
+{
+  "appId": "com.danutarh.textshare",
+  "appName": "TextShare",
+  "webDir": "public",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 0
+    }
+  }
+}

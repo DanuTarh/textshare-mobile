@@ -1,0 +1,344 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #e9e7e3;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* LOGIN SCREEN */
+#login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #e9e7e3;
+}
+
+#login-container h2 {
+  color: #87702e;
+  margin-bottom: 30px;
+  font-size: 2em;
+}
+
+#login-form {
+  background: #f4f3ee;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(135, 112, 46, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 350px;
+}
+
+#login-form input {
+  padding: 12px;
+  border: 2px solid #d7d6d2;
+  border-radius: 8px;
+  font-size: 16px;
+  background: white;
+}
+
+#login-form input:focus {
+  outline: none;
+  border-color: #87702e;
+}
+
+#login-form button {
+  padding: 12px;
+  background: #87702e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#login-form button:hover {
+  background: #6d5a24;
+}
+
+#result {
+  margin-top: 15px;
+  text-align: center;
+  color: #87702e;
+  font-weight: 500;
+}
+
+/* APP SCREEN */
+#app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#header {
+  background: #f4f3ee;
+  padding: 15px 20px;
+  border-bottom: 2px solid #d7d6d2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #87702e;
+  font-weight: bold;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#connection-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.connected {
+  background: #d4f4dd;
+  color: #2d5016;
+  border: 1px solid #87c93f;
+}
+
+.disconnected {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #dc3545;
+}
+
+.connecting {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+}
+
+button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+#logout-btn {
+  background: #dc3545;
+  color: white;
+}
+
+#logout-btn:hover {
+  background: #c82333;
+}
+
+#reconnect-btn {
+  background: #87c93f;
+  color: white;
+}
+
+#reconnect-btn:hover {
+  background: #7bb838;
+}
+
+#disconnect-btn {
+  background: #dc3545;
+  color: white;
+}
+
+#disconnect-btn:hover {
+  background: #c82333;
+}
+
+/* MAIN CONTENT - SIDE BY SIDE */
+#main-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+#send-section, #receive-section {
+  background: #f4f3ee;
+  border: 2px solid #d7d6d2;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(135, 112, 46, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#send-section h3, #receive-section h3 {
+  color: #87702e;
+  margin-bottom: 8px;
+  font-size: 1.3em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#send-section p, #receive-section p {
+  color: #544514;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+#send-text, #receive-text {
+  flex: 1;
+  border: 2px solid #d7d6d2;
+  border-radius: 10px;
+  padding: 15px;
+  font-size: 16px;
+  font-family: 'Segoe UI', monospace;
+  background: white;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.4;
+  min-height: 200px;
+}
+
+#send-text:focus {
+  border-color: #87702e;
+}
+
+#receive-text {
+  background: #fafaf8;
+  color: #544514;
+}
+
+#receive-text:focus {
+  border-color: #87c93f;
+}
+
+#send-text::placeholder, #receive-text::placeholder {
+  color: #a59678;
+}
+
+#send-controls, #receive-controls {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#send-btn {
+  background: #87702e;
+  color: white;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#send-btn:hover:not(:disabled) {
+  background: #6d5a24;
+}
+
+#send-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+#clear-send-btn, #clear-received-btn {
+  background: #dc3545;
+  color: white;
+  padding: 10px 15px;
+  font-size: 12px;
+}
+
+#clear-send-btn:hover, #clear-received-btn:hover {
+  background: #c82333;
+}
+
+#copy-received-btn {
+  background: #87c93f;
+  color: white;
+  padding: 10px 15px;
+  font-size: 12px;
+}
+
+#copy-received-btn:hover:not(:disabled) {
+  background: #7bb838;
+}
+
+#copy-received-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+#send-chars, #receive-chars, #last-received {
+  color: #87702e;
+  font-size: 12px;
+  margin-left: auto;
+}
+
+#receive-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  margin-left: auto;
+}
+
+#last-received {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* MOBILE - STACK VERTICALLY */
+@media (max-width: 768px) {
+  #main-content {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  #header {
+    flex-direction: column;
+    text-align: center;
+    padding: 15px;
+  }
+  
+  #send-section h3, #receive-section h3 {
+    font-size: 1.1em;
+  }
+  
+  #send-text, #receive-text {
+    font-size: 14px;
+    min-height: 150px;
+  }
+  
+  #send-controls, #receive-controls {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  #receive-info {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  #send-controls, #receive-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  #receive-info {
+    align-items: center;
+  }
+}
