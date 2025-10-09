@@ -1,7 +1,7 @@
 // Config - Updated for deployed server
 const API_LOGIN = "https://womtarhonen-board.onrender.com/users/login";
 const API_REFRESH = "https://womtarhonen-board.onrender.com/users/refresh";
-const WEBSOCKET_URL = "wss://wsserverbrowser.onrender.com";
+const WEBSOCKET_URL = "wss://wsserverbrowser.onrender.com"; 
 
 // State
 let accessToken = null;
@@ -12,6 +12,51 @@ let reconnectInterval = null;
 
 console.log("Text sharing app initialized");
 console.log("Connecting to WebSocket server:", WEBSOCKET_URL);
+
+// Refresh access token function
+async function refreshAccessToken() {
+  if (!refreshToken) {
+    console.log("No refresh token available, redirecting to login");
+    logout();
+    return false;
+  }
+  
+  updateConnectionStatus("Refreshing session...", "connecting");
+  
+  try {
+    const res = await fetch(API_REFRESH, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${refreshToken}`
+      },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    });
+    
+    const data = await res.json();
+    
+    if (res.ok && data.access_token) {
+      accessToken = data.access_token;
+      if (data.refresh_token) {
+        refreshToken = data.refresh_token; // Update refresh token if provided
+      }
+      localStorage.setItem('access_token', accessToken);
+      if (data.refresh_token) {
+        localStorage.setItem('refresh_token', refreshToken);
+      }
+      console.log("✅ Access token refreshed successfully");
+      return true;
+    } else {
+      console.log("❌ Refresh failed, need to login again");
+      logout();
+      return false;
+    }
+  } catch (err) {
+    console.error("Refresh error:", err);
+    logout();
+    return false;
+  }
+}
 
 // Login
 document.getElementById("login-form").addEventListener("submit", async function(e) {
@@ -184,9 +229,19 @@ function updateReceiveCharCount() {
   document.getElementById("receive-chars").textContent = `${text.length} characters`;
 }
 
-// Logout
-document.getElementById("logout-btn").addEventListener("click", () => {
+// Logout function
+function logout() {
   console.log("Logging out");
+  
+  // Call logout endpoint to invalidate refresh token on server
+  if (refreshToken) {
+    fetch(API_REFRESH, {
+      method: "DELETE",
+      headers: {
+        'Authorization': `Bearer ${refreshToken}`
+      }
+    }).catch(err => console.log("Logout request failed:", err));
+  }
   
   if (websocket) {
     websocket.close();
@@ -214,7 +269,10 @@ document.getElementById("logout-btn").addEventListener("click", () => {
   document.getElementById("username").value = "";
   document.getElementById("password").value = "";
   document.getElementById("result").textContent = "";
-});
+}
+
+// Updated logout button event listener
+document.getElementById("logout-btn").addEventListener("click", logout);
 
 // WebSocket Connection
 function connectWebSocket() {
@@ -263,8 +321,17 @@ function connectWebSocket() {
     updateConnectionStatus("Disconnected", "disconnected");
     document.getElementById("send-btn").disabled = true;
     
-    // Auto-reconnect for unexpected disconnections
-    if (event.code !== 1000 && accessToken) {
+    // Handle token expiration (common codes: 4001, 1008, or specific reasons)
+    if (event.code === 4001 || event.code === 1008 || 
+        event.reason.includes('token') || event.reason.includes('unauthorized') || 
+        event.reason.includes('expired')) {
+      console.log("Token expired, attempting refresh...");
+      refreshAccessToken().then(success => {
+        if (success) {
+          setTimeout(() => connectWebSocket(), 1000);
+        }
+      });
+    } else if (event.code !== 1000 && accessToken) {
       console.log("Connection lost unexpectedly, scheduling reconnect...");
       scheduleReconnect();
     }
@@ -318,9 +385,22 @@ function scheduleReconnect() {
   if (reconnectInterval) return;
   
   console.log("Scheduling reconnect attempts every 5 seconds...");
-  reconnectInterval = setInterval(() => {
+  let attempts = 0;
+  
+  reconnectInterval = setInterval(async () => {
     if (accessToken) {
-      console.log("Attempting to reconnect...");
+      attempts++;
+      console.log(`Attempting to reconnect... (attempt ${attempts})`);
+      
+      // After 3 failed attempts, try refreshing token
+      if (attempts >= 3) {
+        console.log("Multiple reconnect failures, trying token refresh...");
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+          attempts = 0; // Reset counter after successful refresh
+        }
+      }
+      
       connectWebSocket();
     }
   }, 5000);
@@ -347,7 +427,7 @@ window.onload = function() {
   }
 };
 
-// page visibility changes
+// Handle page visibility changes (reconnect when tab becomes active)
 document.addEventListener('visibilitychange', function() {
   if (!document.hidden && accessToken && (!websocket || websocket.readyState !== WebSocket.OPEN)) {
     console.log("Tab became active, checking connection...");
